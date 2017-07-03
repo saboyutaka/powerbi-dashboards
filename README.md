@@ -45,3 +45,7 @@ export CLIENT_SECRET=your_app_client_secret
 export REFRESH_TOKEN=your_user_refresh_token
 uwsgi --http :5000 --wsgi-file app.py
 ```
+
+List the available dashboards: http(s)://YOUR_HOST/list-dashboards
+
+Access your dashboard: http(s)://YOUR_HOST/?dashboard_id=your_dashboard_id

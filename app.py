@@ -1,17 +1,9 @@
 import os, requests, urllib
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 
 app = Flask(__name__)
 
-@app.route('/', methods=["GET"])
-def index():
-    
-    refresh_token = os.getenv('REFRESH_TOKEN')
-    client_id = os.getenv('CLIENT_ID')
-    client_secret = os.getenv('CLIENT_SECRET')
-
-    dashboard_id = request.args.get('dashboard_id', '')
-    
+def get_access_token(refresh_token, client_id, client_secret):
     payload = {
         'grant_type': 'refresh_token', 
         'resource': 'https://analysis.windows.net/powerbi/api',
@@ -21,7 +13,17 @@ def index():
     }
     
     response = requests.post("https://login.microsoftonline.com/common/oauth2/token", data=payload).json()
-    return render_template('index.html', dashboard_id=dashboard_id, access_token=response.get('access_token'))
+    return response.get('access_token')
+
+@app.route('/', methods=["GET"])
+def index():
+    refresh_token = os.getenv('REFRESH_TOKEN')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+
+    dashboard_id = request.args.get('dashboard_id', '')
+    
+    return render_template('index.html', dashboard_id=dashboard_id, access_token=get_access_token(refresh_token, client_id, client_secret))
     
 @app.route('/authorize', methods=["GET"])
 def autorize():
@@ -35,7 +37,7 @@ def autorize():
     url = "https://login.microsoftonline.com/common/oauth2/authorize?" + urllib.urlencode(payload)
     return redirect(url, code=302)
     
-@app.route('/authorize-callback')
+@app.route('/authorize-callback', methods=["GET"])
 def autorize_callback():
     client_id = os.getenv('CLIENT_ID')
     client_secret = os.getenv('CLIENT_SECRET')
@@ -52,6 +54,18 @@ def autorize_callback():
     
     response = requests.post("https://login.microsoftonline.com/common/oauth2/token", data=payload).json()
     return response.get("refresh_token")
+    
+@app.route('/list-dashboards', methods=["GET"])
+def list_dashboards():
+    refresh_token = os.getenv('REFRESH_TOKEN')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+    
+
+    authorization_header = 'Bearer %s' % get_access_token(refresh_token, client_id, client_secret)
+    response = requests.get("https://api.powerbi.com/v1.0/myorg/dashboards", headers={'Authorization': authorization_header})
+    
+    return jsonify(response.json());
     
 application = app
 
