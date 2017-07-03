@@ -1,0 +1,11 @@
+{
+  "name": "powerbi-dashboards",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bower": "^1.8.0"
+  }
+}

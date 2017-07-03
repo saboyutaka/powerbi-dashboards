@@ -1,0 +1,6 @@
+{
+  "name": "powerbi-dashboards",
+  "dependencies": {
+    "powerbi-client": "^2.3.1"
+  }
+}
