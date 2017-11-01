@@ -1,4 +1,4 @@
-import os, requests, urllib
+import os, requests, urllib, json
 from flask import Flask, render_template, request, redirect, jsonify
 
 app = Flask(__name__)
@@ -64,8 +64,7 @@ def list_dashboards():
 
     authorization_header = 'Bearer %s' % get_access_token(refresh_token, client_id, client_secret)
     response = requests.get("https://api.powerbi.com/v1.0/myorg/dashboards", headers={'Authorization': authorization_header})
-    
-    return jsonify(response.json());
+    return jsonify(json.loads(response.content))
     
 application = app
 
