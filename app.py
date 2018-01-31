@@ -64,7 +64,7 @@ def list_dashboards():
 
     authorization_header = 'Bearer %s' % get_access_token(refresh_token, client_id, client_secret)
     response = requests.get("https://api.powerbi.com/v1.0/myorg/dashboards", headers={'Authorization': authorization_header})
-    return jsonify(json.loads(response.content))
+    return json.dumps(json.loads(response.content))
     
 application = app
 
