@@ -1,4 +1,6 @@
-PowerBI Dashboard 
+# PowerBI Public Dashboards
+
+## The way to publish and share your PowerBI dashboards via public url link. A great alternative to cast dashboards to chromecast combined with [greenscreen](https://github.com/groupon/greenscreen) and [startcast CLI](https://github.com/diequeiroz/start-chromecast-CLI)
 
 Install python2.7 and pip
 
