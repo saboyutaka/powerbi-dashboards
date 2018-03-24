@@ -1,17 +1,31 @@
 FROM node:boron
 
+ENV DEBIAN_FRONTEND noninteractive
+
 WORKDIR /opt/current-app
 
 ADD . .
-RUN apt-get update -y
-RUN apt-get install -y python-pip python2.7 python2.7-dev
-RUN npm install
-# this is needed for bower to work properly
-RUN echo '{ "allow_root": true }' > /root/.bowerrc
-RUN npm run bower_install
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
 
-CMD ["python", "app.py"]
+# "allow_root"  is needed for bower to work properly
 
-EXPOSE 5000
+RUN apt-get update -y && \
+        apt-get install -y \
+        python-pip \
+        python2.7 \
+        python2.7-dev \
+        nginx && \
+    echo "daemon off;" >> /etc/nginx/nginx.conf && \
+    npm install && \
+    echo '{ "allow_root": true }' > /root/.bowerrc && \
+    npm run bower_install && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    dpkg -l|grep python3| awk '{ print $2 }'| xargs apt purge -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ADD nginx/dashboards.conf /etc/nginx/sites-available/default
+
+ENTRYPOINT [ "/opt/current-app/start" ]
+
+EXPOSE 80
